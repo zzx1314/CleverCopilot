@@ -49,6 +49,7 @@ public class AiProcessServiceImp implements AiProcessService {
 
     @Override
     public Boolean register(AiProcess entity) {
+        entity.setIsDeleted(0);
         entity.setCreateTime(LocalDateTime.now());
         repository.persist(entity);
         return true;

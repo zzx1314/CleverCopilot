@@ -91,6 +91,7 @@ public class AiMcpServiceImp implements AiMcpService {
     @Override
     public Boolean register(AiMcp entity) {
         entity.setCreateTime(LocalDateTime.now());
+        entity.setIsDeleted(0);
         repository.persist(entity);
         return true;
     }

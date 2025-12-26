@@ -39,6 +39,7 @@ public class AiParagraphServiceImp implements AiParagraphService {
 
     @Override
     public Boolean register(AiParagraph entity) {
+        entity.setIsDeleted(0);
         entity.setCreateTime(LocalDateTime.now());
         repository.persist(entity);
         return true;

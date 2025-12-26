@@ -47,6 +47,7 @@ public class AiModelServiceImp implements AiModelService {
     @Override
     public Boolean register(AiModel entity) {
         entity.setCreateTime(LocalDateTime.now());
+        entity.setIsDeleted(0);
         repository.persist(entity);
         return true;
     }

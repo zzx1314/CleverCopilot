@@ -102,6 +102,7 @@ public class AiDocumentServiceImp implements AiDocumentService {
     @Override
     public Boolean register(AiDocument entity) {
         entity.setCreateTime(LocalDateTime.now());
+		entity.setIsDeleted(0);
         repository.persist(entity);
         return true;
     }

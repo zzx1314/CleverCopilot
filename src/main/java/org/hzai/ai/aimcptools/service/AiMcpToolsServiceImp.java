@@ -43,6 +43,7 @@ public class AiMcpToolsServiceImp implements AiMcpToolsService {
     @Override
     public Boolean register(AiMcpTools entity) {
         entity.setCreateTime(LocalDateTime.now());
+        entity.setIsDeleted(0);
         repository.persist(entity);
         return true;
     }

@@ -41,6 +41,7 @@ public class AiFineTuningServiceImp implements AiFineTuningService {
     @Override
     public Boolean register(AiFineTuning entity) {
         entity.setCreateTime(LocalDateTime.now());
+        entity.setIsDeleted(0);
         repository.persist(entity);
         return true;
     }
