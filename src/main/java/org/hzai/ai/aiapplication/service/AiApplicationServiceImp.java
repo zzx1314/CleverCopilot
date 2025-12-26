@@ -121,7 +121,7 @@ public class AiApplicationServiceImp implements AiApplicationService {
 
 		if ("简单应用".equals(aiApplicationDto.getType())) {
 			entity.setKnowledgeIds(String.join(",", aiApplicationDto.getKnowledgeIdList()));
-			if (!aiApplicationDto.getMcpIdList().isEmpty()){
+			if (aiApplicationDto.getMcpIdList() != null && !aiApplicationDto.getMcpIdList().isEmpty()){
 				entity.setMcpIds(String.join(",", aiApplicationDto.getMcpIdList()));
 			}
 

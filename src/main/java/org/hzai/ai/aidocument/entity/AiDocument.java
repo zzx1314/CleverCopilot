@@ -3,6 +3,8 @@ package org.hzai.ai.aidocument.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -39,6 +41,7 @@ public class AiDocument extends PanacheEntityBase {
 
 	private String enableStatus;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private LocalDateTime createTime;
 
 	private LocalDateTime updateTime;

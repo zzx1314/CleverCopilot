@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.hzai.system.sysuser.entity.SysUser;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,6 +58,7 @@ public class AiApplication  extends PanacheEntityBase {
 
 	private String knowledgeIds;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private LocalDateTime createTime;
 
 	private LocalDateTime updateTime;

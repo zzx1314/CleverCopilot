@@ -1,8 +1,10 @@
 package org.hzai.system.sysrole.controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.hzai.ai.common.SelectOption;
 import org.hzai.system.sysorg.entity.SysOrg;
 import org.hzai.system.sysrole.entity.SysRole;
 import org.hzai.system.sysrole.entity.dto.SysRoleDto;
@@ -42,6 +44,20 @@ public class SysRoleController {
     @Path("/getPage")
     public R<PageResult<SysRole>> getPage(@BeanParam SysRoleQueryDto sysRoleDto, @BeanParam PageRequest pageRequest) {
         return R.ok(sysRoleService.listRolePage(sysRoleDto, pageRequest));
+    }
+
+    @GET
+    @Path("/getSelectOption")
+    public R<List<SelectOption>> getSelectOption() {
+        List<SelectOption> result = new ArrayList<>();
+		List<SysRole> roleList = sysRoleService.listRoles();
+		for (SysRole role : roleList) {
+			SelectOption option = new SelectOption();
+			option.setLabel(role.getName());
+			option.setValue(role.getId());
+			result.add(option);
+		}
+		return R.ok(result);
     }
 
     @GET

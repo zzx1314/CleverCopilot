@@ -9,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.hzai.ai.aidocument.entity.AiDocument;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * <p>
  * 知识库
@@ -35,6 +37,7 @@ public class AiKnowledgeBase extends PanacheEntityBase {
 
 	private String createUser;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private LocalDateTime createTime;
 
 	private LocalDateTime updateTime;

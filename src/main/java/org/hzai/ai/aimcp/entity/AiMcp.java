@@ -8,6 +8,8 @@ import jakarta.persistence.Id;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -42,6 +44,7 @@ public class AiMcp extends PanacheEntityBase {
 
 	private String status;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private LocalDateTime createTime;
 
 	private LocalDateTime updateTime;
