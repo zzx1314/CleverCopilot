@@ -113,6 +113,7 @@ public class AiApplicationServiceImp implements AiApplicationService {
     @Override
     public Boolean register(AiApplicationDto aiApplicationDto) {
 		AiApplication entity = aiApplicationMapper.toEntity(aiApplicationDto);
+		entity.setIsDeleted(0);
         entity.setCreateTime(LocalDateTime.now());
 
 		entity.setCreateId(securityUtil.getUserId());

@@ -26,11 +26,17 @@ import io.quarkus.panache.common.Page;
 import io.quarkus.runtime.util.StringUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 
 @ApplicationScoped
 public class AiApplicationRepository implements PanacheRepository<AiApplication> {
     @Inject
     AiApplicationMapper mapper;
+
+    @PersistenceContext
+    EntityManager em;
 
     public List<AiApplication> selectList(AiApplicationQueryDto queryDto) {
         QueryBuilder qb = QueryBuilder.create()
@@ -40,6 +46,7 @@ public class AiApplicationRepository implements PanacheRepository<AiApplication>
     }
 
     public PageResult<AiApplicationVo> selectPage(AiApplicationQueryDto dto, PageRequest pageRequest) {
+
         QueryBuilder qb = QueryBuilder.create()
                 .equal("isDeleted", 0)
                 .arrayOverlap("roles", dto.getRoleIdList())
@@ -47,35 +54,82 @@ public class AiApplicationRepository implements PanacheRepository<AiApplication>
                 .between("createTime", dto.getBeginTime(), dto.getEndTime())
                 .orderBy("createTime desc");
 
-        PanacheQuery<AiApplication> query = find(qb.getQuery(), qb.getParams())
-                .page(Page.of(pageRequest.getPageIndex(), pageRequest.getSize()));
-        List<AiApplication> list = query.list();
+        String whereSql = qb.getQuery()
+                .replace("isDeleted =", "is_deleted =")
+                .replace("createId =", "create_id =")
+                .replace("createTime", "create_time");
+
+        String sql = """
+                SELECT *
+                FROM ai_application
+                WHERE %s
+                """.formatted(whereSql);
+
+        Query nativeQuery = em.createNativeQuery(sql, AiApplication.class);
+
+        // 参数名与 SQL 中完全一致（:isDeleted / :createId / :roles_arr）
+        qb.getParams().forEach(nativeQuery::setParameter);
+
+        nativeQuery.setFirstResult(pageRequest.getPageIndex() * pageRequest.getSize());
+        nativeQuery.setMaxResults(pageRequest.getSize());
+
+        List<AiApplication> list = nativeQuery.getResultList();
+
         List<AiApplicationVo> result = new ArrayList<>();
         for (AiApplication aiApplication : list) {
-            AiApplicationVo aiApplicationVo = mapper.toVo(aiApplication);
-            aiApplicationVo.setCreateUsername(aiApplication.getSysUser().getUsername());
-            if (StringUtil.isNullOrEmpty(aiApplication.getKnowledgeIds())) {
+
+            AiApplicationVo vo = mapper.toVo(aiApplication);
+            vo.setCreateUsername(aiApplication.getSysUser().getUsername());
+
+            // 修复 isNullOrEmpty 反逻辑问题
+            if (!StringUtil.isNullOrEmpty(aiApplication.getKnowledgeIds())) {
                 String[] kArray = aiApplication.getKnowledgeIds().split(",");
-                aiApplicationVo.setKnowledgeIdList(Arrays.stream(kArray).map(Integer::parseInt).toList());
-                aiApplicationVo.setKnowledgeCount(kArray.length);
+                vo.setKnowledgeIdList(Arrays.stream(kArray)
+                        .map(Integer::parseInt)
+                        .toList());
+                vo.setKnowledgeCount(kArray.length);
             } else {
-                aiApplicationVo.setKnowledgeCount(0);
+                vo.setKnowledgeCount(0);
             }
-            if (StringUtil.isNullOrEmpty(aiApplication.getMcpIds())) {
-                String[] aArray = aiApplication.getMcpIds().split(",");
-                aiApplicationVo.setMcpIdList(Arrays.stream(aArray).map(Integer::parseInt).toList());
-                aiApplicationVo.setMcpCount(aArray.length);
+
+            if (!StringUtil.isNullOrEmpty(aiApplication.getMcpIds())) {
+                String[] mArray = aiApplication.getMcpIds().split(",");
+                vo.setMcpIdList(Arrays.stream(mArray)
+                        .map(Integer::parseInt)
+                        .toList());
+                vo.setMcpCount(mArray.length);
             } else {
-                aiApplicationVo.setMcpCount(0);
+                vo.setMcpCount(0);
             }
-            if (!aiApplication.getRoles().isEmpty()) {
-                aiApplicationVo.setRoleIdList(aiApplication.getRoles());
+
+            if (aiApplication.getRoles() != null && !aiApplication.getRoles().isEmpty()) {
+                vo.setRoleIdList(aiApplication.getRoles());
             }
-            result.add(aiApplicationVo);
+
+            result.add(vo);
         }
+
+        /**
+         * ===== COUNT SQL =====
+         */
+        String countSql = """
+                SELECT COUNT(*)
+                FROM ai_application
+                WHERE %s
+                """.formatted(
+                // 去掉 order by
+                whereSql.replaceAll("order by[\\s\\S]*$", ""));
+
+        Query countQuery = em.createNativeQuery(countSql);
+
+        //  复用同一套参数
+        qb.getParams().forEach(countQuery::setParameter);
+
+        long total = ((Number) countQuery.getSingleResult()).longValue();
+
         return new PageResult<>(
                 result,
-                query.count(),
+                total,
                 pageRequest.getPage(),
                 pageRequest.getSize());
     }

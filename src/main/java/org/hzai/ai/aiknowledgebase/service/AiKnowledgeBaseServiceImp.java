@@ -45,6 +45,7 @@ public class AiKnowledgeBaseServiceImp implements AiKnowledgeBaseService {
 
     @Override
     public Boolean register(AiKnowledgeBase entity) {
+        entity.setIsDeleted(0);
         entity.setCreateTime(LocalDateTime.now());
         repository.persist(entity);
         return true;

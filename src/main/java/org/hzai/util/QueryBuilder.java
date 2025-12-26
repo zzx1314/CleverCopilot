@@ -8,8 +8,18 @@ public class QueryBuilder {
     private final Map<String, Object> params = new HashMap<>();
     private String orderByClause = "";
     private String alias = ""; // 新增实体别名
+    private boolean nativeSql = false;
 
     private QueryBuilder() {
+    }
+
+    public QueryBuilder nativeSql() {
+        this.nativeSql = true;
+        return this;
+    }
+
+    public boolean isNativeSql() {
+        return nativeSql;
     }
 
     public static QueryBuilder create() {
@@ -86,11 +96,11 @@ public class QueryBuilder {
         return this;
     }
 
-    public QueryBuilder arrayOverlap(String field, Collection<? extends Number> values) {
+    public QueryBuilder arrayOverlap(String field, Collection<Long> values) {
         if (values != null && !values.isEmpty()) {
             String paramName = field + "_arr";
-            query.add(getFieldWithAlias(field) + " && :" + paramName);
-            params.put(paramName, values.toArray(new Number[0]));
+            query.add(getFieldWithAlias(field) + " && (:" + paramName + ")::bigint[]");
+            params.put(paramName, values.toArray(new Long[0]));
         }
         return this;
     }
