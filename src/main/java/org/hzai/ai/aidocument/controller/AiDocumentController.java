@@ -127,7 +127,7 @@ public class AiDocumentController {
 	 */
 	@GET
     @Path(value = "/previewFile")
-	public R<Object> previewFile(PreviewFileDto previewFileDto) {
+	public R<Object> previewFile(@BeanParam PreviewFileDto previewFileDto) {
 		JsonObject paragraphs = aiDocumentService.getParagraphs(previewFileDto);
 		return R.ok(paragraphs);
 	}

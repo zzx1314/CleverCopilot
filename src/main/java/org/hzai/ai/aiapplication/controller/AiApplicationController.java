@@ -104,7 +104,7 @@ public class AiApplicationController {
 
     @GET
     @Path("/downFile")
-	public Response downloadByPath(String filePath) {
+	public Response downloadByPath(@QueryParam("filePath")  String filePath) {
 		 return FileUtil.downloadFile(filePath);
 	 }
 
