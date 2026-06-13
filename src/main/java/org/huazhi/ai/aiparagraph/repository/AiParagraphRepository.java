@@ -55,7 +55,6 @@ public class AiParagraphRepository implements PanacheRepository<AiParagraph> {
                 pageRequest.getSize());
     }
 
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> getApplicationCountByDay() {
         String sql = """
                     SELECT
@@ -67,7 +66,8 @@ public class AiParagraphRepository implements PanacheRepository<AiParagraph> {
                     ORDER BY date ASC
                 """;
 
-        return getEntityManager()
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> result = getEntityManager()
                 .createNativeQuery(sql)
                 .unwrap(org.hibernate.query.NativeQuery.class)
                 .setTupleTransformer((tuple, aliases) -> {
@@ -78,6 +78,7 @@ public class AiParagraphRepository implements PanacheRepository<AiParagraph> {
                     return map;
                 })
                 .getResultList();
+        return result;
     }
 
     @Transactional

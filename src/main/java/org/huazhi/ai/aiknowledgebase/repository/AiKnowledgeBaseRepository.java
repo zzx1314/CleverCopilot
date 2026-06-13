@@ -79,7 +79,6 @@ public class AiKnowledgeBaseRepository implements PanacheRepository<AiKnowledgeB
                 pageRequest.getSize());
     }
 
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> getKnowledgeBaseCountByDay() {
         String sql = """
             SELECT 
@@ -90,7 +89,8 @@ public class AiKnowledgeBaseRepository implements PanacheRepository<AiKnowledgeB
             GROUP BY date_trunc('day', create_time)
             ORDER BY date ASC
         """;
-        return getEntityManager()
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> result = getEntityManager()
         .createNativeQuery(sql, Object[].class)
         .unwrap(NativeQuery.class)
         .setTupleTransformer((tuple, aliases) -> {
@@ -101,6 +101,7 @@ public class AiKnowledgeBaseRepository implements PanacheRepository<AiKnowledgeB
             return map;
         })
         .getResultList();
+        return result;
     }
 
     @Transactional

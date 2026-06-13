@@ -53,7 +53,6 @@ public class AiMcpRepository implements PanacheRepository<AiMcp> {
                 pageRequest.getSize());
     }
 
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> getMcpCountByDay() {
         String sql = """
             SELECT
@@ -65,6 +64,7 @@ public class AiMcpRepository implements PanacheRepository<AiMcp> {
             ORDER BY date ASC
         """;
 
+        @SuppressWarnings("unchecked")
         List<Object[]> rows = getEntityManager().createNativeQuery(sql).getResultList();
         List<Map<String, Object>> result = new ArrayList<>();
         for (Object[] row : rows) {

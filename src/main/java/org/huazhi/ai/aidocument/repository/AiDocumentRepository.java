@@ -44,7 +44,6 @@ public class AiDocumentRepository implements PanacheRepository<AiDocument> {
                 pageRequest.getSize());
     }
 
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> getDocumentCountByDay() {
         String sql = """
             SELECT
@@ -56,6 +55,7 @@ public class AiDocumentRepository implements PanacheRepository<AiDocument> {
             ORDER BY date ASC
         """;
 
+        @SuppressWarnings("unchecked")
         List<Object[]> rows = getEntityManager().createNativeQuery(sql).getResultList();
 
         List<Map<String, Object>> result = new ArrayList<>();
@@ -67,7 +67,6 @@ public class AiDocumentRepository implements PanacheRepository<AiDocument> {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> countDocumentsByKnowledgeBase() {
         String sql = """
             SELECT
@@ -81,6 +80,7 @@ public class AiDocumentRepository implements PanacheRepository<AiDocument> {
             ORDER BY count DESC
         """;
 
+        @SuppressWarnings("unchecked")
         List<Object[]> rows = getEntityManager().createNativeQuery(sql).getResultList();
 
         List<Map<String, Object>> result = new ArrayList<>();

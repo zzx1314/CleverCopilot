@@ -20,11 +20,11 @@ public class EmbeddingStoreRegistry {
 
 	private final Map<Long, EmbeddingStore<?>> stores = new ConcurrentHashMap<>();
 
-	@SuppressWarnings("unchecked")
     public <T> EmbeddingStore<T> getStore(Long knowledgeBaseId) {
+        @SuppressWarnings("unchecked")
         EmbeddingStore<T> store = (EmbeddingStore<T>) stores.get(knowledgeBaseId);
         if (store == null) {
-			store = (EmbeddingStore<T>) PgVectorEmbeddingStore.builder()
+			PgVectorEmbeddingStore newStore = PgVectorEmbeddingStore.builder()
 					.host("localhost")
 					.port(5432)
 					.database("knowledge")
@@ -33,7 +33,10 @@ public class EmbeddingStoreRegistry {
 					.table("embedding_store_"+ knowledgeBaseId)
 					.dimension(embeddingModel.dimension())
 					.build();
-			stores.put(knowledgeBaseId, store);
+			stores.put(knowledgeBaseId, newStore);
+			@SuppressWarnings("unchecked")
+			EmbeddingStore<T> typedStore = (EmbeddingStore<T>) newStore;
+			store = typedStore;
         }
         return store;
     }

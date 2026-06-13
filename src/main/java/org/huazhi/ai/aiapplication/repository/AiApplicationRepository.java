@@ -1,7 +1,8 @@
 package org.huazhi.ai.aiapplication.repository;
 
-import java.beans.Transient;
 import java.time.LocalDateTime;
+
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -176,7 +177,6 @@ public class AiApplicationRepository implements PanacheRepository<AiApplication>
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> getApplicationCountByDay() {
         String sql = """
                     SELECT
@@ -188,6 +188,7 @@ public class AiApplicationRepository implements PanacheRepository<AiApplication>
                     ORDER BY date ASC
                 """;
 
+        @SuppressWarnings("unchecked")
         List<Object[]> rows = getEntityManager().createNativeQuery(sql).getResultList();
 
         List<Map<String, Object>> result = new ArrayList<>();
@@ -200,14 +201,14 @@ public class AiApplicationRepository implements PanacheRepository<AiApplication>
         return result;
     }
 
-    @Transient
+    @Transactional
     public void updateById(AiApplication dto) {
         AiApplication entity = this.findById(dto.getId());
         mapper.updateEntity(dto, entity);
         entity.setUpdateTime(LocalDateTime.now());
     }
 
-    @Transient
+    @Transactional
     public void updateByDto(AiApplicationDto aiApplication) {
         AiApplication entity = this.findById(aiApplication.getId());
         mapper.updateEntityFromDto(aiApplication, entity);

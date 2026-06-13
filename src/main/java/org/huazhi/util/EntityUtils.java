@@ -181,7 +181,6 @@ public class EntityUtils {
 	 * @param action 映射Lmabda表达式
 	 * @return 变换后的类型集合，如果source为null,则返回空集合
 	 */
-	@SuppressWarnings("unchecked")
 	public static <Source, Result> Result[] toArray(
 			final Source[] source,
 			final Function<? super Source, ? extends Result> action) {
@@ -190,11 +189,15 @@ public class EntityUtils {
 
 		if (Objects.nonNull(source)) {
 			// 使用 toArray(IntFunction) 创建泛型数组
-			return Arrays.stream(source)
+			@SuppressWarnings("unchecked")
+			Result[] result = Arrays.stream(source)
 					.map(action)
 					.toArray(size -> (Result[]) new Object[size]);
+			return result;
 		}
-		return (Result[]) new Object[0];
+		@SuppressWarnings("unchecked")
+		Result[] empty = (Result[]) new Object[0];
+		return empty;
 	}
 
 	/**
