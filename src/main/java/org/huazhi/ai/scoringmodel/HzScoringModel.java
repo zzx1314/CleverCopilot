@@ -28,6 +28,7 @@ public class HzScoringModel implements ScoringModel {
     }
 
     @Override
+    @SuppressWarnings("null")
     public Response<List<Double>> scoreAll(List<TextSegment> list, String query) {
         ScoringModeDto dto = new ScoringModeDto();
         dto.setQuestion(query);
